@@ -8,8 +8,12 @@ Miscellaneous utilities
 """
 __docformat__ = 'restructuredtext'
 
-import re, os, random, time, types, math, htmlentitydefs, subprocess
-
+import re, os, random, time, types, math, htmlentitydefs
+try:
+    import subprocess
+except ImportError:
+    pass
+    
 try:
     import hashlib
     md5 = hashlib.md5
