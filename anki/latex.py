@@ -119,6 +119,8 @@ def imageForLatex(deck, latex, build=True):
     ok = True
     if build and (not imageFile or not os.path.exists(imageFile)):
         (ok, imageFile) = buildImg(deck, latex)
+    if not ok or not os.path.exists(imageFile):
+        return (False, latex)
     if not ok:
         return (False, imageFile)
     return (True, imageFile)
@@ -130,7 +132,7 @@ def imgLink(deck, latex, build=True):
     if ok:
         return '<img src="%s">' % img
     else:
-        return img
+        return latex
 
 def formatQA(html, type, cid, mid, fact, tags, cm, deck):
     return renderLatex(deck, html)
