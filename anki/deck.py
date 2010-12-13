@@ -2013,9 +2013,14 @@ order by fields.factId""" % ids2str([x[2] for x in ids])),
 
     def updateFieldCache(self, fids):
         "Add stripped HTML cache for sorting/searching."
-        all = self.s.all(
-            ("select factId, group_concat(value, ' ') from fields "
-             "where factId in %s group by factId") % ids2str(fids))
+        all=[]
+        for factId in fids:
+            values=self.s.all("select value from fields where value is not NULL and factId=%(factId)i" % {"factId": factId})
+            value_list=[]
+            for row in values:
+                    value_list.append(row[0])
+            concatenated_values=' '.join(value_list)
+            all.append([factId, concatenated_values])
         r = []
         from anki.utils import stripHTMLMedia
         for a in all:
