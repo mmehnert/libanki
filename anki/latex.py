@@ -35,20 +35,20 @@ def stripLatex(text):
         text = text.replace(match.group(), "")
     return text
 
-def mungeQA(html, type, fields, model, gname, data, deck):
+def mungeQA(html, type, fields, model, gname, data, deck, build=True):
     "Convert TEXT with embedded latex tags to image links."
     for match in regexps['standard'].finditer(html):
-        html = html.replace(match.group(), _imgLink(deck, match.group(1), model))
+        html = html.replace(match.group(), _imgLink(deck, match.group(1), model, build=build))
     for match in regexps['expression'].finditer(html):
         html = html.replace(match.group(), _imgLink(
-            deck, "$" + match.group(1) + "$", model))
+            deck, "$" + match.group(1) + "$", model, build=build))
     for match in regexps['math'].finditer(html):
         html = html.replace(match.group(), _imgLink(
             deck,
-            "\\begin{displaymath}" + match.group(1) + "\\end{displaymath}", model))
+            "\\begin{displaymath}" + match.group(1) + "\\end{displaymath}", model, build=build))
     return html
 
-def _imgLink(deck, latex, model):
+def _imgLink(deck, latex, model, build=True):
     "Return an img link for LATEX, creating if necesssary."
     txt = _latexFromHtml(deck, latex)
     fname = "latex-%s.png" % checksum(txt)
