@@ -1910,7 +1910,7 @@ facts.id in %s""" % ids2str(ids))
             return
         self.updateCardQACache(ids, dirty)
 
-    def updateCardQACacheFromIds(self, ids, type="cards"):
+    def updateCardQACacheFromIds(self, ids, type="cards",  build=True):
         "Given a list of card or fact ids, update q/a cache."
         if type == "facts":
             # convert to card ids
@@ -1921,9 +1921,9 @@ select c.id, c.cardModelId, f.id, f.modelId
 from cards as c, facts as f
 where c.factId = f.id
 and c.id in %s""" % ids2str(ids))
-        self.updateCardQACache(rows)
+        self.updateCardQACache(rows,  build=build)
 
-    def updateCardQACache(self, ids, dirty=True):
+    def updateCardQACache(self, ids, dirty=True, build=True):
         "Given a list of (cardId, cardModelId, factId, modId), update q/a cache."
         if dirty:
             mod = ", modified = %f" % time.time()
@@ -1947,7 +1947,7 @@ order by fields.factId""" % ids2str([x[2] for x in ids])),
         cms = {}
         for c in self.s.query(CardModel).all():
             cms[c.id] = c
-        pend = [formatQA(cid, mid, facts[fid], tags[cid], cms[cmid], self)
+        pend = [formatQA(cid, mid, facts[fid], tags[cid], cms[cmid], self, build=build)
                 for (cid, cmid, fid, mid) in ids]
         if pend:
             # find existing media references
