@@ -8,7 +8,12 @@ Latex support
 """
 __docformat__ = 'restructuredtext'
 
-import re, tempfile, os, sys, shutil, cgi, subprocess
+import re, tempfile, os, sys, shutil, cgi
+try:
+    import subprocess
+except ImportError:
+    pass
+    
 from anki.utils import genID, checksum, call
 from anki.hooks import addHook
 from htmlentitydefs import entitydefs
