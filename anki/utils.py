@@ -2,8 +2,12 @@
 # Copyright: Damien Elmes <anki@ichi2.net>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-import re, os, random, time, types, math, htmlentitydefs, subprocess, \
+import re, os, random, time, types, math, htmlentitydefs, \
     tempfile, shutil
+try:
+    import subprocess
+except ImportError:
+    pass
 
 try:
     import hashlib
