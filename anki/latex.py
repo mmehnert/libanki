@@ -2,8 +2,13 @@
 # Copyright: Damien Elmes <anki@ichi2.net>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-import re, os, sys, shutil, cgi, subprocess
+import re, os, sys, shutil, cgi
 from anki.utils import checksum, call, namedtmp, tmpdir, isMac, stripHTML
+try:
+    import subprocess
+except ImportError:
+    pass
+
 from anki.hooks import addHook
 from htmlentitydefs import entitydefs
 from anki.lang import _
