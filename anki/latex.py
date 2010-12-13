@@ -136,8 +136,8 @@ def imgLink(deck, latex, build=True):
     else:
         return latex
 
-def formatQA(html, type, cid, mid, fact, tags, cm, deck):
-    return renderLatex(deck, html)
+def formatQA(html, type, cid, mid, fact, tags, cm, deck, build=True):
+    return renderLatex(deck, html,  build=build)
 
 # setup q/a filter
 addHook("formatQA", formatQA)
