@@ -127,15 +127,15 @@ def imageForLatex(deck, latex, build=True):
 
 def imgLink(deck, latex, build=True):
     "Parse LATEX and return a HTML image representing the output."
-    latex = mungeLatex(deck, latex)
+    if build: latex = mungeLatex(deck, latex)
     (ok, img) = imageForLatex(deck, latex, build)
     if ok:
         return '<img src="%s">' % img
     else:
         return latex
 
-def formatQA(html, type, cid, mid, fact, tags, cm, deck):
-    return renderLatex(deck, html)
+def formatQA(html, type, cid, mid, fact, tags, cm, deck, build=True):
+    return renderLatex(deck, html,  build=build)
 
 # setup q/a filter
 addHook("formatQA", formatQA)
