@@ -127,8 +127,8 @@ def imageForLatex(deck, latex, build=True):
 
 def imgLink(deck, latex, build=True):
     "Parse LATEX and return a HTML image representing the output."
-    if build: latex = mungeLatex(deck, latex)
-    (ok, img) = imageForLatex(deck, latex, build)
+    tmplatex = mungeLatex(deck, latex)
+    (ok, img) = imageForLatex(deck, tmplatex, build)
     if ok:
         return '<img src="%s">' % img
     else:
