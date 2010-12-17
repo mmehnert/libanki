@@ -1888,7 +1888,7 @@ cardModelId = :id""", id=cardModel.id)
         model.setModified()
         self.flushMod()
 
-    def updateCardsFromModel(self, model, dirty=True):
+    def updateCardsFromModel(self, model, dirty=True,  build=True):
         "Update all card question/answer when model changes."
         ids = self.s.all("""
 select cards.id, cards.cardModelId, cards.factId, facts.modelId from
@@ -1897,7 +1897,7 @@ cards.factId = facts.id and
 facts.modelId = :id""", id=model.id)
         if not ids:
             return
-        self.updateCardQACache(ids, dirty)
+        self.updateCardQACache(ids, dirty,  build=build)
 
     def updateCardsFromFactIds(self, ids, dirty=True):
         "Update all card question/answer when model changes."
@@ -3622,7 +3622,7 @@ backupDir = os.path.expanduser("~/.anki/backups")
 
 class DeckStorage(object):
 
-    def Deck(path=None, backup=True, lock=True, pool=True, rebuild=True):
+    def Deck(path=None, backup=True, lock=True, pool=True, rebuild=True,  build=True):
         "Create a new deck or attach to an existing one."
         create = True
         if path is None:
@@ -3712,11 +3712,11 @@ class DeckStorage(object):
                     DeckStorage.backup(deck, path)
                 deck._initVars()
                 try:
-                    deck = DeckStorage._upgradeDeck(deck, path)
+                    deck = DeckStorage._upgradeDeck(deck, path,  build=build)
                 except:
                     traceback.print_exc()
                     deck.fixIntegrity()
-                    deck = DeckStorage._upgradeDeck(deck, path)
+                    deck = DeckStorage._upgradeDeck(deck, path,  build=build)
         except OperationalError, e:
             engine.dispose()
             if (str(e.orig).startswith("database table is locked") or
@@ -3924,7 +3924,7 @@ where type = 2 and isDue = 1
 order by priority desc, due desc""")
     _addViews = staticmethod(_addViews)
 
-    def _upgradeDeck(deck, path):
+    def _upgradeDeck(deck, path,  build=True):
         "Upgrade deck to the latest version."
         if deck.version < DECK_VERSION:
             prog = True
@@ -4079,7 +4079,7 @@ alter table models add column source integer not null default 0""")
             deck.rebuildCounts()
             # regenerate question/answer cache
             for m in deck.models:
-                deck.updateCardsFromModel(m, dirty=False)
+                deck.updateCardsFromModel(m, dirty=False,  build=build)
             deck.version = 13
         if deck.version < 14:
             deck.s.statement("""
@@ -4182,7 +4182,7 @@ where interval < 1""")
                 for cm in m.cardModels:
                     cm.name = munge(cm.name)
                 m.tags = munge(m.tags)
-                deck.updateCardsFromModel(m, dirty=False)
+                deck.updateCardsFromModel(m, dirty=False,  build=build)
             deck.version = 26
             deck.s.commit()
             deck.s.statement("vacuum")
@@ -4377,7 +4377,7 @@ this message. (ERR-0101)""") % {
                         cm.aformat = cm.aformat.replace("%("+un+")s", "{{{%s}}}"%un)
             # rebuild q/a for the above & because latex has changed
             for m in deck.models:
-                deck.updateCardsFromModel(m, dirty=False)
+                deck.updateCardsFromModel(m, dirty=False,  build=build)
             # rebuild the media db based on new format
             rebuildMediaDir(deck, dirty=False)
             deck.version = 61
