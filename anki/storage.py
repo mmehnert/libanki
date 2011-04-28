@@ -13,7 +13,7 @@ from anki.stdmodels import BasicModel, ClozeModel
 from anki.errors import AnkiError
 from anki.hooks import runHook
 
-def Deck(path, queue=True, lock=True):
+def Deck(path, queue=True, lock=True, build=True):
     "Open a new or existing deck. Path must be unicode."
     path = os.path.abspath(path)
     create = not os.path.exists(path)
@@ -29,7 +29,7 @@ def Deck(path, queue=True, lock=True):
         ver = _upgradeSchema(db)
     db.execute("pragma cache_size = 20000")
     # add db to deck and do any remaining upgrades
-    deck = _Deck(db)
+    deck = _Deck(db, build)
     if ver < CURRENT_VERSION:
         _upgradeDeck(deck, ver)
     elif create:

@@ -51,12 +51,13 @@ defaultConf = {
 # this is initialized by storage.Deck
 class _Deck(object):
 
-    def __init__(self, db):
+    def __init__(self, db, build=True):
         self.db = db
         self.path = db._path
         self._lastSave = time.time()
         self.clearUndo()
         self.load()
+        self.build=build
         if not self.crt:
             d = datetime.datetime.today()
             d -= datetime.timedelta(hours=4)
@@ -492,7 +493,7 @@ select id from cards where fid in (select id from facts where mid = ?)""",
             fields = runFilter("mungeFields", fields, model, gname, data, self)
             html = anki.template.render(format, fields)
             d[type] = runFilter(
-                "mungeQA", html, type, fields, model, gname, data, self)
+                "mungeQA", html, type, fields, model, gname, data, self, self.build)
         return d
 
     def _qaData(self, where=""):
