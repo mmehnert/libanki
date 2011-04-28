@@ -55,7 +55,8 @@ class Scheduler(object):
         elif card.queue == 2:
             self._answerRevCard(card, ease)
         else:
-            raise Exception("Invalid queue")
+            card.queue = 1
+            raise Exception("Invalid queue: "+str(card.queue))
         card.mod = intTime()
         card.flushSched()
 
