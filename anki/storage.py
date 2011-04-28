@@ -269,12 +269,26 @@ order by created""")
     ###########
     # tags should have a leading and trailing space if not empty, and not
     # use commas
-    db.execute("""
-update facts set tags = (case
-when trim(tags) == "" then ""
-else " " || replace(replace(trim(tags), ",", " "), "  ", " ") || " "
-end)
-""")
+    try:
+        db.execute("""
+    update facts set tags = (case
+    when trim(tags) == "" then ""
+    else " " || replace(replace(trim(tags), ",", " "), "  ", " ") || " "
+    end)
+    """)
+    except:
+        tag_rows=db.all("""select id, tags from facts""")
+        for row in tag_rows:
+            tags=row[1].strip()
+            tags.replace(",", " ")
+            tags.replace("  ", " ")
+            if len(tags)>0:
+                tags=" "+tags+" "
+            if tags == row [1]:
+                continue
+            else:
+                db.execute("""update facts set tags=? where id=?""" , tags,row[0])
+
     # pull facts into memory, so we can merge them with fields efficiently
     facts = db.all("""
 select id, modelId, 1, cast(created as int), cast(modified as int), tags
